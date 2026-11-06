@@ -1,0 +1,24 @@
+name: Update GitHub stats
+on:
+  schedule: [{ cron: "0 */6 * * *" }]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Draw stats.svg and feed.svg from the GitHub API
+        run: python scripts/stats.py ${{ github.repository_owner }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # THEME: neon      # <- uncomment only if you switched away from the default jarvis theme (cinematic, neon, royal, emerald)
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/stats.svg assets/feed.svg
+          git diff --cached --quiet || git commit -m "chore: refresh GitHub stats" && git push
