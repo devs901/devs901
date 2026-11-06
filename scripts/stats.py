@@ -7,7 +7,7 @@ import build
 QUERY = """query($login:String!){ user(login:$login){
   repositories(ownerAffiliations:OWNER, isFork:false, first:100){ totalCount nodes{ stargazerCount languages(first:6, orderBy:{field:SIZE, direction:DESC}){ edges{ size node{ name } } } } }
   contributionsCollection{ totalCommitContributions }
-  pullRequests{ totalCount } } }"""
+  pullRequests(first: 1){ totalCount  } } }"""
 
 def main():
     login = sys.argv[1] if len(sys.argv) > 1 else "devs901"
